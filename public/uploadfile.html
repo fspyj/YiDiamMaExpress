@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>上传文件</title>
+    <style>
+        .maindiv {
+            align-items: center;
+            background: gray;
+            align-content: center;
+            justify-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .cdiv {
+            margin-top: 20px;
+
+        }
+
+        .progressdiv {
+            width: 300px;
+            height: 15px;
+            align-items: center;
+            display: -webkit-inline-flex;
+            visibility: hidden;
+        }
+    </style>
+</head>
+<script src="javascripts/jquery-3.4.0.min.js"></script>
+<body>
+
+<h3>文件上传：</h3>
+<!--选择一个文件上传: <br/>
+<form action="/uploadfile/upfile.action" method="post" enctype="multipart/form-data">
+    <input type="file" name="file1" size="50"/>
+    <input type="file" name="file2" size="50"/>
+    <input type="file" name="file3" size="50"/>
+    <br/>
+    <input type="submit" value="上传文件"/>
+</form>-->
+<div class="maindiv">
+    文件上传2
+    <div class="cdiv">
+        <input id="input1" type="file" multiple/>
+        <br>
+
+        <div class="progressdiv" id="progressdiv">
+            <div style="width: 300px; background:transparent; height: 15px">
+                <div id="handdiv" style="background: blue;width: 30px;height: 15px;border-radius: 10px"></div>
+            </div>
+            <label id="lb_progress">100%</label>
+        </div>
+    </div>
+    <div class="cdiv">
+        <button id="btn">上传</button>
+    </div>
+    <div>
+        <video id="showVideo" controls>
+            你的浏览器不支持<code>Video</code>标签
+        </video>
+    </div>
+
+</div>
+
+</body>
+<script>
+
+    $(function () {
+        $("#input1").bind('change',function () {
+            $('#progressdiv').css('visibility','hidden')
+        })
+        $("#btn").click(function () {
+             //const fs=require('fs')
+
+             if ($("#input1").get(0).files[0]==undefined)
+             {
+                 alert("请选择文件")
+                 return
+             }
+            let count= $("#input1").get(0).files.length;
+            var fileSize =0;
+            for (let i=0;i<count;i++)
+            {
+                fileSize +=  $("#input1").get(0).files[i].size;
+            }
+
+            if (fileSize>1024*1024*200)
+            {
+                alert('所选文件不能操作200M')
+                return;
+            }
+
+            $('#progressdiv').css('visibility','visible')
+            $('#lb_progress').text("0%")
+            $('#handdiv').css('width',0+ '%')
+
+
+
+            var formData = new FormData()
+            for (let i=0;i<count;i++)
+            {
+                formData.append('file'+(i+1), $("#input1").get(0).files[i])
+            }
+            let that=$;
+            ///alert(formData)
+            $.ajax({
+                contentType: false,
+                type: 'POST',
+                data: formData,
+                processData: false,
+                url: '/uploadfile/upfile.action',
+                success: function (data) {
+                    let path='./public/updir/'+that("#input1").get(0).files[0].name;
+                    that("#showVideo").attr("src",path)
+                    alert(data)
+                },
+                error: function (err) {
+                    alert('文件上传失败')
+                },
+                xhr:function () {
+                    let  myxhr=$.ajaxSettings.xhr()
+                    if (myxhr.upload)
+                    {
+                        myxhr.upload.addEventListener('progress',progressHandlingFunction,false);
+                    }
+                    return myxhr;
+                }
+            })
+
+        })
+        function progressHandlingFunction(e) {
+            var curr=e.loaded;
+            var total=e.total;
+            let process= Math.round(curr/total*100) ;
+
+            $('#handdiv').css('width',process+ '%')
+            $('#lb_progress').text(process+"%")
+        }
+    })
+</script>
+</html>

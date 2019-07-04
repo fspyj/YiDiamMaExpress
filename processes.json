@@ -1,0 +1,26 @@
+{
+  "apps": [
+  {
+    "name": "MyExpress",
+    "cwd": "./",
+    "script": "./bin/www",
+    "log_date_format": "YYYY-MM-DD HH:mm Z",
+    "error_file": "./log/err.log",
+    "out_file": "./log/stdout.log",
+    "pid_file": "./pids/node-geo-api.pid",
+    "instances":1,
+    "min_uptime": "200s",
+    "max_restarts": 10,
+    "max_memory_restart": "100M",
+    "watch": ["bin","routes","app.js","public"],
+    "merge_logs": true,
+    "exec_interpreter": "node",
+    "exec_mode": "fork",
+    "autorestart": true,
+    "vizion": false
+
+  }
+  ]
+
+}
+
